@@ -9,14 +9,15 @@ import UIKit
 class ViewController: UIViewController {
     
     //MARK: - UIProperties
-    var currentGame: Game!
+    
     let buttonStackView = UIStackView()
+    var currentGame: Game!
     let correctWordLabel = UILabel()
-    let mainStackView = UIStackView()
-    let newWordButton = UIButton()
     let gatesImageVIew = UIImageView()
-    let lowStackView = UIStackView()
     var letterButtons = [UIButton]()
+    let lowStackView = UIStackView()
+    let mainStackView = UIStackView()
+    let otherWordButton = UIButton()
     
     //MARK: - Properties
     var incorrectMovesAlowed = 7
@@ -35,25 +36,10 @@ class ViewController: UIViewController {
     
     //MARK: - Methods
     
-    func trueAllert() {
-        let trueAlert = UIAlertController(title: "Wins!🥳", message: "Great keep up the good work!", preferredStyle: .alert)
-        let trueButton = UIAlertAction(title: "Great", style: .default, handler: nil)
-        trueAlert.addAction(trueButton)
-        present(trueAlert, animated: true, completion: nil)
-    }
-    
-    func falseAllert() {
-        let falseAlert = UIAlertController(title: "Losses☹️", message: "Oh sorry, try again.", preferredStyle: .alert)
-        let falseButton = UIAlertAction(title: "OK", style: .default, handler: nil)
-        falseAlert.addAction(falseButton)
-        present(falseAlert, animated: true, completion: nil)
-    }
-    
-    @objc func letterButtonPressed(sender: UIButton) {
-        sender.isEnabled = false
-        let letter = sender.title(for: .normal)!
-        currentGame.playerGuessed(letter: Character(letter))
-        updateState()
+    func enableButton(_ enable: Bool = true) {
+        for button in letterButtons {
+            button.isEnabled = enable
+        }
     }
     
     func initLetterButtons(fontSize: CGFloat = 17) {
@@ -82,6 +68,20 @@ class ViewController: UIViewController {
             buttonRows[row].distribution = .fillEqually
             buttonStackView.addArrangedSubview(buttonRows[row])
         }
+    }
+    
+    @objc func letterButtonPressed(sender: UIButton) {
+        sender.isEnabled = false
+        let letter = sender.title(for: .normal)!
+        currentGame.playerGuessed(letter: Character(letter))
+        updateState()
+    }
+    
+    func loseAllert() {
+        let falseAlert = UIAlertController(title: "Losses☹️", message: "Oh sorry, try again.", preferredStyle: .alert)
+        let falseButton = UIAlertAction(title: "OK", style: .default, handler: nil)
+        falseAlert.addAction(falseButton)
+        present(falseAlert, animated: true, completion: nil)
     }
     
     @objc func newWordButtonPressed() {
@@ -123,24 +123,21 @@ class ViewController: UIViewController {
     
     func updateState() {
         if currentGame.incorrectMovesRemaining < 1 {
-            falseAllert()
+            loseAllert()
             totalLosses += 1
         } else if currentGame.guessedWord == currentGame.word {
-            trueAllert()
+            winAllert()
             totalWins += 1
         } else {
             updateUI()
         }
     }
     
-    func enableButton(_ enable: Bool = true) {
-        for button in letterButtons {
-            button.isEnabled = enable
-        }
-    }
-    
-    @objc func switchTarget() {
-
+    func winAllert() {
+        let trueAlert = UIAlertController(title: "Wins!🥳", message: "Great keep up the good work!", preferredStyle: .alert)
+        let trueButton = UIAlertAction(title: "Great", style: .default, handler: nil)
+        trueAlert.addAction(trueButton)
+        present(trueAlert, animated: true, completion: nil)
     }
     
     override func viewDidLoad() {
@@ -148,9 +145,6 @@ class ViewController: UIViewController {
         
         let size = view.bounds.size
         let factor = min(size.height, size.width)
-        
-        // Setup alert controller
- 
         
         // Setup button Stack view
         buttonStackView.axis = .vertical
@@ -162,12 +156,22 @@ class ViewController: UIViewController {
         correctWordLabel.textAlignment = .center
         correctWordLabel.textColor = .white
         
+        // Setup tree Image view
+        gatesImageVIew.image = UIImage(named: "Tree3")
+        gatesImageVIew.contentMode = .scaleAspectFit
+        
         //Setup letter buttons
         initLetterButtons(fontSize: factor / 15)
         
-        // Setup view
-        view.addSubview(mainStackView)
-        view.backgroundColor = .clear
+        // Setup lower Stack view
+        lowStackView.backgroundColor = .clear
+        lowStackView.addArrangedSubview(buttonStackView)
+        lowStackView.addArrangedSubview(correctWordLabel)
+        lowStackView.addArrangedSubview(scoreLabel)
+        lowStackView.addArrangedSubview(otherWordButton)
+        lowStackView.axis = .vertical
+        lowStackView.distribution = .fillEqually
+        lowStackView.spacing = 5
         
         // Setup top Stack view
         mainStackView.addArrangedSubview(gatesImageVIew)
@@ -178,31 +182,21 @@ class ViewController: UIViewController {
         mainStackView.spacing = 10
         
         //Setup new word button
-        newWordButton.setTitle("Other word", for: [])
-        newWordButton.setTitleColor(.black, for: [])
-        newWordButton.backgroundColor = .white
-        newWordButton.layer.cornerRadius = 20
-        newWordButton.addTarget(self, action: #selector(newWordButtonPressed), for: .touchUpInside)
-        
-        // Setup tree Image view
-        gatesImageVIew.image = UIImage(named: "Tree3")
-        gatesImageVIew.contentMode = .scaleAspectFit
-        
-        // Setup lower Stack view
-        lowStackView.backgroundColor = .clear
-        lowStackView.addArrangedSubview(buttonStackView)
-        lowStackView.addArrangedSubview(correctWordLabel)
-        lowStackView.addArrangedSubview(scoreLabel)
-        lowStackView.addArrangedSubview(newWordButton)
-        lowStackView.axis = .vertical
-        lowStackView.distribution = .fillEqually
-        lowStackView.spacing = 5
+        otherWordButton.setTitle("Other word", for: [])
+        otherWordButton.setTitleColor(.black, for: [])
+        otherWordButton.backgroundColor = .white
+        otherWordButton.layer.cornerRadius = 20
+        otherWordButton.addTarget(self, action: #selector(newWordButtonPressed), for: .touchUpInside)
         
         // Setup score label
         scoreLabel.textColor = .white
         scoreLabel.textAlignment = .center
         scoreLabel.font = UIFont.boldSystemFont(ofSize: factor / 20)
         scoreLabel.text = "Wins: \(totalWins) Losses: \(totalLosses)"
+        
+        // Setup view
+        view.addSubview(mainStackView)
+        view.backgroundColor = .clear
         
         updateStackSize(to: view.bounds.size)
         newRound()
