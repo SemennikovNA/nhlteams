@@ -111,7 +111,7 @@ class ViewController: UIViewController {
         let image = "Gates\(imageNumber)"
         gatesImageVIew.image = UIImage(named: image)
         updateCorrectWordLabel()
-        scoreLabel.text = "Выигрыши: \(totalWins) Проигрыши: \(totalLosses)"
+        scoreLabel.text = "Wins: \(totalWins) Losses: \(totalLosses)" 
     }
     
     func updateCorrectWordLabel() {
