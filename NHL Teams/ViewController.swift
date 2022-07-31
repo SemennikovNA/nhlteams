@@ -11,7 +11,6 @@ class ViewController: UIViewController {
     //MARK: - UIProperties
     
     let buttonStackView = UIStackView()
-    var currentGame: Game!
     let correctWordLabel = UILabel()
     let gatesImageVIew = UIImageView()
     var letterButtons = [UIButton]()
@@ -20,8 +19,10 @@ class ViewController: UIViewController {
     let otherWordButton = UIButton()
     
     //MARK: - Properties
+    
+    var currentGame: Game!
     var incorrectMovesAlowed = 7
-    var listOfComands = ["Hurricanes", "Blue Jackets", "Devils", "Islanders", "Rangers", "Flyers", "Penguins", "Capitals", "Bruins", "Sabres", "Red Wings", "Panthers", "Canadiens", "Senators", "Lightning", "Maple Leafs", "Coyotes", "Blackhawks", "Avalanche", "Stars", "Wild", "Predators", "Blues", "Jets", "Ducks", "Flames", "Oilers", "Kings", "Sharks", "Kraken", "Canucks", "Golden Knights"]
+    var listOfComands = ["Hurricanes", "Blue Jackets", "Devils", "Islanders", "Rangers", "Flyers", "Penguins", "Capitals", "Bruins", "Sabres", "Red Wings", "Panthers", "Canadiens", "Senators", "Lightning", "Maple Leafs", "Coyotes", "Blackhawks", "Avalanche", "Stars", "Wild", "Predators", "Blues", "Jets", "Ducks", "Flames", "Oilers", "Kings", "Sharks", "Kraken", "Canucks", "Golden Knights"].shuffled()
     let scoreLabel = UILabel()
     var totalWins = 0 {
         didSet {
